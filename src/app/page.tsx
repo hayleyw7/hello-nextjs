@@ -1,60 +1,50 @@
-'use client'
+import React from 'react';
+import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql } from '@apollo/client';
+import { Links } from './components/links';
+import Image from 'next/image';
 
-// import { Metadata } from 'next'
-// import Link from 'next/link'
-// import Loading from './loading'
-// import { useRouter } from 'next/navigation'
- 
-import { Links } from './components/links'
-import React, { useState, useEffect, Suspense } from 'react';
+const client = new ApolloClient({
+  uri: 'http://localhost:4000',
+  cache: new InMemoryCache()
+});
 
-type KittenImage = {
-  url: string;
-};
-
-async function getRandomKittenImages(): Promise<KittenImage[]> {
-  const randomNumbers = Array.from({ length: 3 }, () => 
-    Math.floor(Math.random() * 999) + 1
-  );
-
-  const fetchKittenImage = async (number: number): Promise<KittenImage> => {
-    const url = `https://placekitten.com/g/200/${number}`;
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image at ${url}`);
+const GET_KITTEN_IMAGES = gql`
+  query GetRandomKittenImages {
+    getRandomKittenImages {
+      url
     }
+  }
+`;
 
-    return { url };
-  };
+function KittenImages() {
+  const { loading, error, data } = useQuery(GET_KITTEN_IMAGES);
 
-  return Promise.all(randomNumbers.map(fetchKittenImage));
-}
-
-export default function Page() {
-  const [kittenImages, setKittenImages] = useState([]);
-
-  useEffect(() => {
-    getRandomKittenImages()
-      .then(images => {
-        setKittenImages(images);
-      })
-      .catch(error => {
-        console.error('Error fetching kitten images:', error);
-      });
-  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div>
-      <Links />
-      <h1>Home</h1>
-      <div>
-        {kittenImages.map((image, index) => (
-          <Suspense fallback={<p>Loading Kitten...</p>} key={index}>
-            <img src={image.url} alt={`Kitten ${index}`} />
-          </Suspense>
-        ))}
-      </div>
+      {data.getRandomKittenImages.map((image: string | { url: string }, index: number) => (
+        <Image
+          src={(typeof image === 'string') ? `https://placekitten.com/g/200/${index}` : image.url}
+          alt={`Kitten ${index}`} // Provide a descriptive alt text here
+          key={index}
+        />
+      ))}
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <ApolloProvider client={client}>
+      <div>
+        <Links />
+        <h1>Home</h1>
+        <div>
+          <KittenImages />
+        </div>
+      </div>
+    </ApolloProvider>
   );
 }

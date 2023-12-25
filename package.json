@@ -3,25 +3,34 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"next dev\" \"nodemon server/server.js\"",
     "build": "next build",
-    "start": "next start",
+    "start": "concurrently \"next start\" \"ts-node src/server/server.mjs\"",
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.8.8",
+    "apollo-server": "^3.13.0",
+    "apollo-server-express": "^3.13.0",
+    "express": "^4.18.2",
+    "graphql": "^16.8.1",
     "next": "14.0.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.10.5",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.16",
+    "concurrently": "^8.2.2",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
+    "npm-run-all": "^4.1.5",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }

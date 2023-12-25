@@ -1,16 +1,13 @@
-import React, { Suspense } from 'react';
-import Loading from './loading'
+import React from 'react';
 import { Links } from '../components/links'
 
 export default function Page() {
   return (
     <div>
-      <Suspense fallback={<Loading />}>
-        <nav id="navbar">
-          <Links />
-        </nav>
-        <h1>Settings</h1>
-      </Suspense>
+      <nav id="navbar">
+        <Links />
+      </nav>
+      <h1>Settings</h1>
     </div>
   )
 }
